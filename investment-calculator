@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>เว็บคำนวณค่าเฉลี่ยต้นทุนการลงทุน</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-900 via-blue-800 to-indigo-900 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-white flex items-center justify-center">
+        <i data-lucide="calculator" class="mr-3 h-8 w-8 text-yellow-300"></i>
+        <span id="title">เว็บคำนวณค่าเฉลี่ยต้นทุนการลงทุน</span>
+      </h1>
+      <p class="mt-2 text-blue-200">คำนวณต้นทุนเฉลี่ยได้อย่างง่ายดาย</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden border border-indigo-100">
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full" id="investmentTable">
+          <thead>
+            <tr class="bg-gradient-to-r from-indigo-700 to-blue-600 text-white">
+              <th class="px-4 py-3 text-left w-12">#</th>
+              <th class="px-4 py-3 text-left" id="thDate">วันที่</th>
+              <th class="px-4 py-3 text-right" id="thPricePerUnit">ราคาต่อหน่วย</th>
+              <th class="px-4 py-3 text-right" id="thQuantity">จำนวน</th>
+              <th class="px-4 py-3 text-right" id="thTotalPrice">ราคารวม</th>
+              <th class="px-4 py-3 text-center w-16"></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Rows will be generated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Add Row Button -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <button id="addRowButton" class="flex items-center text-indigo-600 hover:text-indigo-800">
+          <i data-lucide="plus-circle" class="h-5 w-5 mr-1"></i>
+          <span id="addRowText">เพิ่มแถว</span>
+        </button>
+      </div>
+
+      <!-- Results Section -->
+      <div class="px-6 py-6 bg-gradient-to-br from-indigo-50 to-blue-50 border-t-2 border-indigo-100">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white/90 p-4 rounded-lg shadow-lg backdrop-blur-sm border border-indigo-100 transform hover:scale-105 transition-transform duration-300">
+            <div class="text-sm text-gray-500 mb-1 flex items-center justify-center">
+              <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-semibold" id="totalUnitsText">จำนวนหน่วยรวม</span>
+            </div>
+            <div class="text-2xl font-bold text-indigo-800 text-center mt-2" id="totalUnits">0</div>
+          </div>
+
+          <div class="bg-white/90 p-4 rounded-lg shadow-lg backdrop-blur-sm border border-indigo-100 transform hover:scale-105 transition-transform duration-300">
+            <div class="text-sm text-gray-500 mb-1 flex items-center justify-center">
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold" id="totalInvestmentText">มูลค่ารวม</span>
+            </div>
+            <div class="text-2xl font-bold text-indigo-800 flex items-center justify-center mt-2">
+              <span class="text-lg mr-1" id="currencySymbol">$</span>
+              <span id="totalInvestment">0.00</span>
+            </div>
+          </div>
+
+          <div class="bg-white/90 p-4 rounded-lg shadow-lg backdrop-blur-sm border border-green-100 transform hover:scale-105 transition-transform duration-300">
+            <div class="text-sm text-gray-500 mb-1 flex items-center justify-center">
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold" id="averageCostText">ค่าเฉลี่ยต่อหน่วย</span>
+            </div>
+            <div class="text-2xl font-bold text-green-600 flex items-center justify-center mt-2">
+              <span class="text-lg mr-1" id="currencySymbol2">$</span>
+              <span id="averageCost">0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="px-6 py-4 flex justify-between border-t border-gray-200">
+        <button id="resetButton" class="px-5 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg shadow-lg hover:from-red-600 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center transform hover:scale-105 transition-all duration-200">
+          <i data-lucide="refresh-cw" class="h-5 w-5 mr-2"></i>
+          <span id="resetText">รีเซ็ต</span>
+        </button>
+
+        <button id="calculateButton" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg shadow-lg hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 flex items-center transform hover:scale-105 transition-all duration-200">
+          <i data-lucide="dollar-sign" class="h-5 w-5 mr-2"></i>
+          <span id="calculateText">คำนวณ</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center text-blue-200 text-sm">
+      © 2025 ThaiInvest | เครื่องมือคำนวณการลงทุนมืออาชีพ
+    </div>
+  </div>
+
+  <script>
+    // Translation strings and language setting
+    const translations = {
+      en: {
+        title: "Investment Average Cost Calculator",
+        date: "Date",
+        pricePerUnit: "Price Per Unit",
+        quantity: "Quantity",
+        totalPrice: "Total Price",
+        totalUnits: "Total Units",
+        totalInvestment: "Total Investment",
+        averageCost: "Average Cost Per Unit",
+        calculate: "Calculate",
+        reset: "Reset",
+        addRow: "Add Row",
+        deleteRow: "Delete",
+        currency: "$"
+      },
+      th: {
+        title: "เว็บคำนวณค่าเฉลี่ยต้นทุนการลงทุน",
+        date: "วันที่",
+        pricePerUnit: "ราคาต่อหน่วย",
+        quantity: "จำนวน",
+        totalPrice: "ราคารวม",
+        totalUnits: "จำนวนหน่วยรวม",
+        totalInvestment: "มูลค่ารวม",
+        averageCost: "ค่าเฉลี่ยต่อหน่วย",
+        calculate: "คำนวณ",
+        reset: "รีเซ็ต",
+        addRow: "เพิ่มแถว",
+        deleteRow: "ลบ",
+        currency: "฿"
+      }
+    };
+
+    let language = 'th';
+    const t = translations[language];
+
+    // Update text content based on translations
+    document.getElementById('title').textContent = t.title;
+    document.getElementById('thDate').textContent = t.date;
+    document.getElementById('thPricePerUnit').textContent = t.pricePerUnit;
+    document.getElementById('thQuantity').textContent = t.quantity;
+    document.getElementById('thTotalPrice').textContent = t.totalPrice;
+    document.getElementById('addRowText').textContent = t.addRow;
+    document.getElementById('resetText').textContent = t.reset;
+    document.getElementById('calculateText').textContent = t.calculate;
+    document.getElementById('totalUnitsText').textContent = t.totalUnits;
+    document.getElementById('totalInvestmentText').textContent = t.totalInvestment;
+    document.getElementById('averageCostText').textContent = t.averageCost;
+    document.getElementById('currencySymbol').textContent = t.currency;
+    document.getElementById('currencySymbol2').textContent = t.currency;
+
+    // Initialize row data
+    let rows = [
+      { id: 1, date: '', pricePerUnit: '', quantity: '', totalPrice: 0 },
+      { id: 2, date: '', pricePerUnit: '', quantity: '', totalPrice: 0 }
+    ];
+
+    const tableBody = document.getElementById('tableBody');
+
+    // Render the table rows
+    function renderTable() {
+      tableBody.innerHTML = '';
+      rows.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.className = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
+
+        // Index Column
+        const tdIndex = document.createElement('td');
+        tdIndex.className = 'px-4 py-3 border-b border-gray-200 text-gray-500';
+        tdIndex.textContent = index + 1;
+        tr.appendChild(tdIndex);
+
+        // Date Input Column
+        const tdDate = document.createElement('td');
+        tdDate.className = 'px-4 py-3 border-b border-gray-200';
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.className = 'w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50';
+        dateInput.value = row.date;
+        dateInput.addEventListener('change', (e) => updateRow(row.id, 'date', e.target.value));
+        tdDate.appendChild(dateInput);
+        tr.appendChild(tdDate);
+
+        // Price Per Unit Input Column
+        const tdPrice = document.createElement('td');
+        tdPrice.className = 'px-4 py-3 border-b border-gray-200';
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'flex items-center justify-end';
+        const currencySpan = document.createElement('span');
+        currencySpan.className = 'text-gray-500 mr-1';
+        currencySpan.textContent = t.currency;
+        priceDiv.appendChild(currencySpan);
+        const priceInput = document.createElement('input');
+        priceInput.type = 'number';
+        priceInput.className = 'w-24 text-right rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50';
+        priceInput.min = '0';
+        priceInput.step = '0.01';
+        priceInput.value = row.pricePerUnit;
+        priceInput.addEventListener('input', (e) => {
+          const value = e.target.value === '' ? '' : parseFloat(e.target.value) || 0;
+          updateRow(row.id, 'pricePerUnit', value);
+        });
+        priceDiv.appendChild(priceInput);
+        tdPrice.appendChild(priceDiv);
+        tr.appendChild(tdPrice);
+
+        // Quantity Input Column
+        const tdQuantity = document.createElement('td');
+        tdQuantity.className = 'px-4 py-3 border-b border-gray-200';
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'number';
+        quantityInput.className = 'w-24 text-right rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50';
+        quantityInput.min = '0';
+        quantityInput.value = row.quantity;
+        quantityInput.addEventListener('input', (e) => {
+          const value = e.target.value === '' ? '' : parseFloat(e.target.value) || 0;
+          updateRow(row.id, 'quantity', value);
+        });
+        tdQuantity.appendChild(quantityInput);
+        tr.appendChild(tdQuantity);
+
+        // Total Price Display Column
+        const tdTotalPrice = document.createElement('td');
+        tdTotalPrice.className = 'px-4 py-3 border-b border-gray-200';
+        const totalPriceDiv = document.createElement('div');
+        totalPriceDiv.className = 'flex items-center justify-end';
+        const totalCurrencySpan = document.createElement('span');
+        totalCurrencySpan.className = 'text-gray-500 mr-1';
+        totalCurrencySpan.textContent = t.currency;
+        totalPriceDiv.appendChild(totalCurrencySpan);
+        const totalPriceSpan = document.createElement('span');
+        totalPriceSpan.className = 'font-medium text-gray-900';
+        totalPriceSpan.textContent = parseFloat(row.totalPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        totalPriceDiv.appendChild(totalPriceSpan);
+        tdTotalPrice.appendChild(totalPriceDiv);
+        tr.appendChild(tdTotalPrice);
+
+        // Delete Button Column
+        const tdDelete = document.createElement('td');
+        tdDelete.className = 'px-4 py-3 border-b border-gray-200 text-center';
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'text-red-500 hover:text-red-700 focus:outline-none';
+        deleteButton.title = t.deleteRow;
+        deleteButton.innerHTML = '<i data-lucide="trash-2" class="h-5 w-5"></i>';
+        deleteButton.addEventListener('click', () => deleteRow(row.id));
+        tdDelete.appendChild(deleteButton);
+        tr.appendChild(tdDelete);
+
+        tableBody.appendChild(tr);
+      });
+      // Update Lucide icons after adding new elements
+      lucide.createIcons();
+      calculateTotals();
+    }
+
+    // Calculate totals based on valid rows
+    function calculateTotals() {
+      const validRows = rows.filter(row =>
+        row.quantity !== '' && parseFloat(row.quantity) > 0 &&
+        row.pricePerUnit !== '' && parseFloat(row.pricePerUnit) > 0
+      );
+
+      const totalUnits = validRows.reduce((sum, row) => sum + parseFloat(row.quantity), 0);
+      const totalInvestment = validRows.reduce((sum, row) => sum + row.totalPrice, 0);
+      const averageCostPerUnit = totalUnits > 0 ? (totalInvestment / totalUnits).toFixed(2) : 0;
+
+      document.getElementById('totalUnits').textContent = totalUnits.toLocaleString();
+      document.getElementById('totalInvestment').textContent = parseFloat(totalInvestment).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('averageCost').textContent = Number(averageCostPerUnit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Update a specific row field and recalculate the total for that row
+    function updateRow(id, field, value) {
+      rows = rows.map(row => {
+        if (row.id === id) {
+          const updatedRow = { ...row, [field]: value };
+          if (field === 'pricePerUnit' || field === 'quantity') {
+            const price = field === 'pricePerUnit' ? value : row.pricePerUnit;
+            const quantity = field === 'quantity' ? value : row.quantity;
+            updatedRow.totalPrice = (price !== '' && quantity !== '') ? parseFloat(price) * parseFloat(quantity) : 0;
+          }
+          return updatedRow;
+        }
+        return row;
+      });
+      renderTable();
+    }
+
+    // Add a new row to the table
+    function addRow() {
+      const newId = Math.max(...rows.map(row => row.id)) + 1;
+      rows.push({ id: newId, date: '', pricePerUnit: '', quantity: '', totalPrice: 0 });
+      renderTable();
+    }
+
+    // Delete a row (if more than one remains)
+    function deleteRow(id) {
+      if (rows.length > 1) {
+        rows = rows.filter(row => row.id !== id);
+        renderTable();
+      }
+    }
+
+    // Reset the table to its initial state
+    function handleReset() {
+      rows = [
+        { id: 1, date: '', pricePerUnit: '', quantity: '', totalPrice: 0 },
+        { id: 2, date: '', pricePerUnit: '', quantity: '', totalPrice: 0 }
+      ];
+      renderTable();
+    }
+
+    // Handle explicit calculation (recalculate totals)
+    function handleCalculate() {
+      calculateTotals();
+    }
+
+    // Set up event listeners for buttons
+    document.getElementById('addRowButton').addEventListener('click', addRow);
+    document.getElementById('resetButton').addEventListener('click', handleReset);
+    document.getElementById('calculateButton').addEventListener('click', handleCalculate);
+
+    // Initial render of the table
+    renderTable();
+  </script>
+</body>
+</html>
